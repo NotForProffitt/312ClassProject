@@ -20,4 +20,5 @@ To manage critical sections, a flag 'criticalSector' is present. Each process ch
 enters its own critical section. Because I have not implemented a round robin scheduler and multithreading is not present in this phase, not two processes will be
 simulated to be executing in parallel and therefore no critical section collision will occur.
 
-Some formatting is presented in the UI to more easily show information about processes, including the execution order and burst time of each process.
+Some formatting is presented in the UI to more easily show information about processes, including the execution order and burst time of each process. The UI presents each option available, when asking for type of process lowercase values are expected. As priority scheduling has not yet been implemented, when prompted for choice of
+scheduler both option 1 and 2 will choose SJF scheduling. After process has been displayed, 'y' will allow the user to continue simulating processes and 'n' will exit the program.
