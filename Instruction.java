@@ -6,10 +6,8 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class Instruction {
-    public static ArrayList processList = new ArrayList();
-
     //called by main to place the template values into an array and create a process with those instructions
-    public static ProcessClass makeProcesses(String type) throws FileNotFoundException {
+    public static ProcessClass makeProcesses(String type, int lineStart) throws FileNotFoundException {
         Scanner file;
         ArrayList<ArrayList<String>> input = new ArrayList<>();
         switch (type) {
@@ -18,10 +16,17 @@ public class Instruction {
             case "mixed" -> file = new Scanner(new File("src/" + "process2.txt"));
             default -> throw new IllegalStateException("Unexpected value: " + type);
         }
+
+        if(lineStart != -1) {
+            for(int i = 0; i < lineStart; i++){
+                if(file.hasNextLine()) file.nextLine();
+            }
+        }
+
         while(file.hasNextLine()) {
             final String nextLine = file.nextLine();
             final String[] items = nextLine.split(" ");
-            ArrayList<String> line = new ArrayList<String>(Arrays.asList(items));
+            ArrayList<String> line = new ArrayList<>(Arrays.asList(items));
             input.add(line);
             Arrays.fill(items, null);
         }
@@ -31,8 +36,8 @@ public class Instruction {
 
         for(int i = 0; i < processArray.length; i++) {
             Random random = new Random();
-            int rand = 0;
-            if(processArray[i][0].equals("CALCULATE") || processArray[i][0].equals("I/O") || processArray[i][0].equals("FORK")) {
+            int rand;
+            if(processArray[i][0].equals("CALCULATE") || processArray[i][0].equals("I/O")) {
                 switch (processArray[i][0]) {
                     case "CALCULATE" -> instructions[i][0] = "C";
                     case "I/O" -> instructions[i][0] = "I";
@@ -43,11 +48,14 @@ public class Instruction {
             }
             else if(processArray[i][0].equals("SECTION")) {
                 instructions[i][0] = "S";
+                instructions[i][1] = Integer.toString(Integer.parseInt(processArray[i][1]));
+            }
+
+            else if(processArray[i][0].equals("FORK")) {
+                instructions[i][0] = "F";
                 instructions[i][1] = "0";
             }
         }
-        ProcessClass newClass = new ProcessClass(0, instructions);
-        processList.add(newClass);
-        return newClass;
+        return new ProcessClass(instructions, type);
     }
 }

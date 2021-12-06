@@ -1,32 +1,31 @@
-public class ProcessClass extends Thread {
+public class ProcessClass {
     private static int uniquePid = 0;
-    private int createdTime = 0;
-    private int currentIndex = 0;
     private int burstTime;
     private String[][] instructions;
     private int pid;
+    private int ppid=- 1;
     private int completedCPUCycles;
     private int completedIOCycles;
+    private int priority;
+    public final int MEM_REQ = Math.floorDiv(burstTime, 4);
+    private final String TYPE;
+    private boolean isActiveProcess = false;
+    public PCB processPCB = new PCB(0,pid);
 
-    ProcessClass(int state, String[][] instruct) {
+    ProcessClass(String[][] instruct, String type) {
         //0=NEW, 1=READY, 2=RUN, 3=WAIT, 4=EXIT
         pid = uniquePid;
+        processPCB.pidSet(pid);
         uniquePid++;
-        //this.state = state;
-        this.instructions = instruct;
-
-
+        processPCB.prioritySet(-1);
+        priority = -1;
+        instructions = instruct;
+        TYPE = type;
 
         for (String[] instruction : instructions) {
             if (instruction[0].equals("C"))
                 burstTime = burstTime + Integer.parseInt(instruction[1]);
         }
-    }
-
-    //creating associated PCB
-    public void createPCB() {
-        PCB pcb = new PCB(0, pid);
-        OS.pcbList.add(pcb);
     }
 
     public int getUniquePid() {
@@ -45,55 +44,29 @@ public class ProcessClass extends Thread {
         return burstTime;
     }
 
+    public int priorityGet() {
+        //return processPCB.priorityGet();
+        return this.priority;
+    }
+
+    public void prioritySet(int priority) {
+        this.priority = priority;
+    }
+
+    public String getType() {
+        return this.TYPE;
+    }
+
     public String[][] getInstructions() {
         return instructions;
     }
 
-    public void execute(int PCBIndex) throws InterruptedException {
-        //PCB set state to running
-        for (int i = 0; i < instructions.length; i++) {
-            if ((OS.criticalSector) && OS.pcbList.get(PCBIndex).getInCriticalSector()) {
-                if (instructions[i][0].equals("S")) {
-                    OS.setCriticalSector(!OS.getCriticalSector());
-                    OS.pcbList.get(PCBIndex).setInCriticalSector(!OS.getCriticalSector());
-                }
-                if (instructions[i][0].equals("C")) {
-                    cycle(Integer.parseInt(instructions[i][1]));
-                    OS.pcbList.get(PCBIndex).stateSet(2);
-                    System.out.println("    Process "+getPid()+" State: "+OS.pcbList.get(PCBIndex).stateGet());
-
-                }
-
-                if (instructions[i][0].equals("I")) {
-                    OS.pcbList.get(PCBIndex).stateSet(3);
-                    processIO(Integer.parseInt(instructions[i][1]));
-                    System.out.println("    Process "+getPid()+" State: "+OS.pcbList.get(PCBIndex).stateGet());
-                }
-                if (instructions[i][0].equals("F")) processFork();
-
-            }
-        }
+    public boolean getActive() {
+        return this.isActiveProcess;
     }
 
-    private void cycle(int cycles) throws InterruptedException {
-        for (int i = 0; i <= cycles; i++) {
-            this.completedCPUCycles++;
-            sleep(25);
-        }
+    public void setActive(boolean isAct) {
+        this.isActiveProcess = isAct;
     }
 
-    private void processIO(int cycles) throws InterruptedException {
-        for (int i = 0; i <= cycles; i++) {
-            this.completedIOCycles++;
-            sleep(40);
-        }
-    }
-
-    //TODO stub
-    private void processFork() {
-
-    }
-
-    ProcessClass() {
-    }
 }

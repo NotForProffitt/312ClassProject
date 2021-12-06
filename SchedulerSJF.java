@@ -8,12 +8,12 @@ public class SchedulerSJF {
     public static void schedule(List<ProcessClass> processList) {
        ArrayList<int[]> tempArrTemp = new ArrayList<>();
        ArrayList<Integer> order = new ArrayList<>();
-       for(int i = 0; i<processList.size(); i++) {
+       for(int i = 0; i < processList.size(); i++) {
            int[] processArr = new int[6];
            tempArrTemp.add(processArr);
            int[] process = new int[6];
            tempArr.add(process);
-           tempArr.get(i)[0] = Math.toIntExact(processList.get(i).getPid());
+           tempArr.get(i)[0] = Math.toIntExact(processList.get(i).processPCB.pidGet());
            tempArr.get(i)[1] = burst;
            tempArr.get(i)[2] = processList.get(i).getBurstTime();
        }
@@ -21,16 +21,15 @@ public class SchedulerSJF {
        arrangeArrival(tempArrTemp.size(), tempArr);
        completionTime(tempArrTemp.size(), tempArr);
 
-        for (int i = 0; i < tempArr.size(); i++) {
-            order.add(tempArr.get(i)[0]);
+        for (int[] ints : tempArr) {
+            order.add(ints[0]);
         }
 
-        for (int i = 0; i < order.size(); i++) {
+        for(int i = 0; i < order.size(); i++) {
             for (int j = 0; j < order.size(); j++) {
-                if(OS.processList.get(j).getPid() == order.get(i)){
+                if(OS.processList.get(j).processPCB.pidGet() == order.get(i)){
                     OS.processListScheduled.add(OS.processList.get(j));
                 }
-
             }
         }
     }
