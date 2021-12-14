@@ -9,14 +9,20 @@ public class OS {
     public static List<ProcessClass> processList = new ArrayList<>();
     //used to store processes after they have been sorted by scheduler call
     public static List<ProcessClass> processListScheduled = new ArrayList<>();
-    //used to indicate that more processes should be simulated
-    public static char cont ='y';
-    //used to store generated priority values before they are assigned to processes
-    public static ArrayList<Integer> priorityList = new ArrayList<>();
     //denotes maximum system available
     public static final int MAX_MEM = 1024;
     //indicates the current amount of memory available to processes
     public static int availableMem = MAX_MEM;
+    //main mem
+    public static int mainMem = 0;
+    //storage
+    public static int storageMem = 0;
+    //registers
+    public static int registerMem = 0;
+    //used to indicate that more processes should be simulated
+    public static char cont ='y';
+    //used to store generated priority values before they are assigned to processes
+    public static ArrayList<Integer> priorityList = new ArrayList<>();
     //used for checking if all processes have been executed
     public static boolean hasREADY = false;
     //tallies total amount of processes simulated
@@ -72,9 +78,14 @@ public class OS {
             for (int i = 0; i < OS.processListScheduled.size(); i++) {
                 if(OS.processListScheduled.get(i).MEM_REQ <= availableMem) {
                     OS.processListScheduled.get(i).processPCB.stateSet(1);
-                    availableMem -= OS.processListScheduled.get(i).MEM_REQ;
+                    OS.availableMem -= OS.processListScheduled.get(i).MEM_REQ;
+                    OS.mainMem += OS.processListScheduled.get(i).MEM_REQ;
                     OS.hasREADY = true;
                 }
+                else {
+                    OS.storageMem += processListScheduled.get(i).MEM_REQ;
+                }
+
                 System.out.println("Sorted Schedule Order: " + OS.processListScheduled.get(i).processPCB.pidGet() + ", with burst time of: " + OS.processListScheduled.get(i).getBurstTime() + " and priority of: " + OS.processListScheduled.get(i).processPCB.priorityGet() + " and state: " + OS.processListScheduled.get(i).processPCB.stateGet());
             }
 
@@ -95,6 +106,9 @@ public class OS {
                 processListScheduled.clear();
                 priorityList.clear();
                 processList.clear();
+                //processListScheduledStorage.clear();
+                //processListScheduledMain.clear();
+                //processListScheduledRegister.clear();
                 execProcCount = 0;
             }
             //exits

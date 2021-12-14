@@ -7,7 +7,7 @@ public class ProcessClass {
     private int completedCPUCycles;
     private int completedIOCycles;
     private int priority;
-    public final int MEM_REQ = Math.floorDiv(burstTime, 4);
+    public final int MEM_REQ;
     private final String TYPE;
     private boolean isActiveProcess = false;
     public PCB processPCB = new PCB(0,pid);
@@ -26,6 +26,7 @@ public class ProcessClass {
             if (instruction[0].equals("C"))
                 burstTime = burstTime + Integer.parseInt(instruction[1]);
         }
+        MEM_REQ = Math.floorDiv(burstTime, 6);
     }
 
     public int getUniquePid() {

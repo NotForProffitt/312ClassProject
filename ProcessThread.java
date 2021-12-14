@@ -8,6 +8,7 @@ public class ProcessThread implements Runnable {
 
     private int completedCPUCycles;
     private int completedIOCycles;
+    public static String msg;
     ProcessClass p;
     Semaphore semaphore;
 
@@ -20,10 +21,12 @@ public class ProcessThread implements Runnable {
         if(p.processPCB.stateGet() == 1) {
             System.out.println("    Executing process " + p.processPCB.pidGet() + "...");
             p.processPCB.stateSet(2);
+            OS.registerMem += p.MEM_REQ;
             p.processPCB.setActive(true);
             OS.currentProcesses.add(p);
             processExecute();
             OS.currentProcesses.remove(p);
+            OS.registerMem -= p.MEM_REQ;
             OS.execProcCount++;
             System.out.println("    Process ID " + p.processPCB.pidGet() + " execution complete.");
             p.processPCB.stateSet(4);

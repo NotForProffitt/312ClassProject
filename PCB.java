@@ -6,6 +6,7 @@ public class PCB {
     private boolean isInCriticalSector;
     private int ppid;
     private boolean isActiveProcess = false;
+    private String boardMsg;
 
     public PCB(int state, int pid) {
         this.processState = state;
@@ -60,4 +61,21 @@ public class PCB {
         this.isActiveProcess = isAct;
     }
 
+    //sets the shared memory message
+    public void setSharedMessage(String sharedMessage) {
+        CPU.sharedMessage = sharedMessage+"::PID"+this.pid;
+    }
+
+    public String getSharedMessage() {
+        return CPU.sharedMessage;
+    }
+
+    //appends pid to message as a signature
+    public void sendBoardMessage(String msg) {
+        CPU.messageBoard.add(msg+"::PID"+this.pid);
+    }
+
+    public void getMessageBoard(int i) {
+        this.boardMsg = CPU.messageBoard.get(i);
+    }
 }

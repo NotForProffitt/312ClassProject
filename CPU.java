@@ -1,9 +1,13 @@
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Semaphore;
 
 public class CPU {
     private int completedCPUCycles;
     private int completedIOCycles;
+    public static String sharedMessage = "";
+    public static List<String> messageBoard= new ArrayList<>();
 
     Thread proc = null;
     Thread proc2 = null;
@@ -42,9 +46,9 @@ public class CPU {
                     proc2.start();
 
                 if(proc != null)
-                    proc.join();
+                    proc.join(15000);
                 if(proc2 != null)
-                    proc2.join();
+                    proc2.join(15000);
                 //set threads to null so individual threads can be executed if <2 processes remain
                 proc = null;
                 proc2 = null;
@@ -69,6 +73,8 @@ public class CPU {
         for (int i = 0; i < OS.processListScheduled.size(); i++) {
             if (OS.processListScheduled.get(i).MEM_REQ <= OS.availableMem && OS.processListScheduled.get(i).processPCB.stateGet() != 4) {
                 OS.processListScheduled.get(i).processPCB.stateSet(1);
+                OS.mainMem += OS.processListScheduled.get(i).MEM_REQ;
+                OS.storageMem -= OS.processListScheduled.get(i).MEM_REQ;
                 OS.availableMem -= OS.processListScheduled.get(i).MEM_REQ;
                 OS.hasREADY = true;
             }
